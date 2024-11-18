@@ -8,4 +8,4 @@ public interface IVendaService {
     // List<ItemVenda> getItens();
     // int getClienteId();
     // void setClientId(int clienteId);
-}
+} 
