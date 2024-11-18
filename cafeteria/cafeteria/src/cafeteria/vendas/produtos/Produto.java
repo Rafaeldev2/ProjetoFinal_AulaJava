@@ -4,14 +4,14 @@ public class Produto {
     private int id;
     private String nome;
     private double preco;
-    private String unidadeMedida;
+    private UnidadeMedida Medida;
 
 
-    public Produto(int id, String nome, double preco, String unidadeMedida) {
+    public Produto(int id, String nome, double preco, UnidadeMedida Medida) {
         this.id =id;
         this.nome = nome;
         this.preco = preco;
-        this.unidadeMedida = unidadeMedida;
+        this.Medida = Medida;
     }
 
     // gets
@@ -27,8 +27,8 @@ public class Produto {
         return preco;
     }
 
-    public String getUnidadeMedida() {
-        return unidadeMedida;
+    public UnidadeMedida getMedida() {
+        return Medida;
     }
 
     // sets
@@ -49,8 +49,8 @@ public class Produto {
 
     }
 
-    public void  setUnidadeMedida( String unidadeMedida){
-        this.unidadeMedida = unidadeMedida;
+    public void  setUnidadeMedida( UnidadeMedida Medida){
+        this.Medida = Medida;
 
     }
 

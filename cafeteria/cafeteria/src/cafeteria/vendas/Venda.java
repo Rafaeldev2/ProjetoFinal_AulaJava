@@ -1,73 +1,84 @@
 package cafeteria.vendas;
+import java.time.LocalDate;
 import  java.util.List;
 
 
 public class Venda {
-    private int clienteId;
-    private String nomeProduto;
-    private String medida;
-    private double total;
-    private double  desconto;
+    private int id;
+    private LocalDate dataHora;
+    private Cliente cliente;
     private List<ItemVenda> itens;
+    private double  desconto;
+    private double total;
 
-    public Venda(int clienteId,String nomeProtuto, String medida, double total, double desconto){
-         this.clienteId = clienteId;
-         this.nomeProduto = nomeProtuto;
-         this.medida = medida;
-         this.desconto = desconto;
-         this.total = total;
-    }
-
-
-// gets
-
-    public int getClienteId() {
-        return clienteId;
-    }
-
-    public double getDesconto() {
-        return desconto;
-    }
-
-    public String getMedida() {
-        return medida;
-    }
-
-    public String getNomeProduto() {
-        return nomeProduto;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-
-// sets
-    public void setClientId( int clienteId){
-        this.clienteId = clienteId;
-    }
-
-    public void setnomeProduto( String nomeProduto){
-        this.nomeProduto = nomeProduto;
-    }
     
-    public void setMedida( String medida){
-        this.medida = medida;
-    }
     
 
-    public void setDesconto( double desconto){
-        this.desconto = desconto;
-    }
-    
 
-    public void setTotal( double total){
-        this.total = total;
-    }
+public Venda(int id, LocalDate dataHora, Cliente cliente, List<ItemVenda> itens, double desconto, double total) {
+		super();
+		this.id = id;
+		this.dataHora = dataHora;
+		this.cliente = cliente;
+		this.itens = itens;
+		this.desconto = desconto;
+		this.total = total;
+	}
 
-   
+  
     
-    // manipulação de itens
+public int getId() {
+	return id;
+}
+
+
+public LocalDate getDataHora() {
+	return dataHora;
+}
+
+
+public Cliente getCliente() {
+	return cliente;
+}
+
+public List<ItemVenda> getItens() {
+	return itens;
+}
+
+public double getDesconto() {
+	return desconto;
+}
+
+public double getTotal() {
+	return total;
+}
+
+public void setId(int id) {
+	this.id = id;
+}
+
+public void setDataHora(LocalDate dataHora) {
+	this.dataHora = dataHora;
+}
+
+public void setCliente(Cliente cliente) {
+	this.cliente = cliente;
+}
+
+
+public void setItens(List<ItemVenda> itens) {
+	this.itens = itens;
+}
+
+public void setDesconto(double desconto) {
+	this.desconto = desconto;
+}
+
+public void setTotal(double total) {
+	this.total = total;
+}
+
+	// manipulação de itens
     public void adicionarItem(ItemVenda item) {
         this.itens.add(item);
     }

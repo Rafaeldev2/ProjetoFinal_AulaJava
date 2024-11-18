@@ -1,7 +1,11 @@
 package cafeteria.vendas;
 
+import cafeteria.vendas.produtos.UnidadeMedida;
+
 public class ItemVenda {
+	private int id;
     private String nomeProduto;
+    private UnidadeMedida Medida;
     private int quantidade;
     private double precoUnitario;
 
