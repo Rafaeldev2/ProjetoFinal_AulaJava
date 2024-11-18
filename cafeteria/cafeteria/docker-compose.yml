@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - config/.env          
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5438:5432'
+    volumes:
+      # DESCOMENTE A LINHA ABAIXO PARA MANTER A BASE DE DADOS
+      # - ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./sql/01-create_tables.sql:/docker-entrypoint-initdb.d/01-create_tables.sql
+      # copy the sql script to fill tables
+      - ./sql/02-populate.sql:/docker-entrypoint-initdb.d/02-populate.sql
+    networks:
+      - postgres-network
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    restart: always
+    env_file:
+      - config/.env        
+    ports:
+      - 8880:80
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
+
+networks:
+  postgres-network:
+    driver: bridge
