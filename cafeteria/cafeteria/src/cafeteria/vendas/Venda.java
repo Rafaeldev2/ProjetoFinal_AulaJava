@@ -2,6 +2,8 @@ package cafeteria.vendas;
 import java.time.LocalDate;
 import  java.util.List;
 
+import cafeteria.vendas.clientes.Cliente;
+
 
 public class Venda {
     private int id;
