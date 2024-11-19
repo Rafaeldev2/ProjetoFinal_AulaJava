@@ -1,9 +1,8 @@
 package cafeteria.vendas.produtos;
 
-import java.util.List;
-
 public interface IProdutoService {
-    void adicionarProduto(Produto produto);
-    List<Produto>listaProdutos();
-    Produto buscaProduto(int id);
+
+   public Produto pesquisarProduto(int id);
+   public void criarProduto(Produto p);
+   public void atualizarProduto(Produto p);
 }

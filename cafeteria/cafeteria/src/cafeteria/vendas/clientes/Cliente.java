@@ -8,11 +8,39 @@ public class Cliente {
 	
 	
 	public Cliente(int id, String nome, String telefone) {
-		super();
 		this.id = id;
 		this.nome = nome;
 		this.telefone = telefone;
 	}
-	
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public String getNome() {
+		return nome;
+	}
+
+
+	public String getTelefone() {
+		return telefone;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
 	
 }

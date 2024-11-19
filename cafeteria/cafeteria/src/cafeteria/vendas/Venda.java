@@ -1,9 +1,7 @@
 package cafeteria.vendas;
 import java.time.LocalDate;
 import  java.util.List;
-
 import cafeteria.vendas.clientes.Cliente;
-
 
 public class Venda {
     private int id;
@@ -11,14 +9,11 @@ public class Venda {
     private Cliente cliente;
     private List<ItemVenda> itens;
     private double  desconto;
-    private double total;
-
-    
-    
+    private double total;   
 
 
 public Venda(int id, LocalDate dataHora, Cliente cliente, List<ItemVenda> itens, double desconto, double total) {
-		super();
+		
 		this.id = id;
 		this.dataHora = dataHora;
 		this.cliente = cliente;
@@ -27,17 +22,14 @@ public Venda(int id, LocalDate dataHora, Cliente cliente, List<ItemVenda> itens,
 		this.total = total;
 	}
 
-  
     
 public int getId() {
 	return id;
 }
 
-
 public LocalDate getDataHora() {
 	return dataHora;
 }
-
 
 public Cliente getCliente() {
 	return cliente;
@@ -66,7 +58,6 @@ public void setDataHora(LocalDate dataHora) {
 public void setCliente(Cliente cliente) {
 	this.cliente = cliente;
 }
-
 
 public void setItens(List<ItemVenda> itens) {
 	this.itens = itens;

@@ -3,9 +3,9 @@ package cafeteria.vendas;
 
 
 public interface IVendaService {
-    // void adicionarItem(ItemVenda item);
-    // double calcularTotalVenda();
-    // List<ItemVenda> getItens();
-    // int getClienteId();
-    // void setClientId(int clienteId);
+
+    public Venda pesquisarVenda(int id);
+    public void criarVenda(Venda v);
+    public void atualizarVenda(Venda v);
+    public void listarVenda(Venda v);
 } 
