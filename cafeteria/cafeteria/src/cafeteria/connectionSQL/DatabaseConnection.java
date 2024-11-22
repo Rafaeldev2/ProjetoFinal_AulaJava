@@ -1,4 +1,4 @@
-package cafeteria.vendas;
+package cafeteria.connectionSQL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
