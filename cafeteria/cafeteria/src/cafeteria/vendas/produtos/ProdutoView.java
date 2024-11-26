@@ -174,7 +174,7 @@ public class ProdutoView extends JInternalFrame {
 		id.setText(p.getId()+"");
 		nome.setText(p.getNome());
 		preco.setText(p.getPreco()+"");
-		setupPesquisar();
+		setupConsultar();
 		System.out.println("==> onClickPesquisar");
 	}
 

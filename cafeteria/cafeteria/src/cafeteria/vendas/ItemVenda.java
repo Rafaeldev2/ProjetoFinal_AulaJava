@@ -59,7 +59,6 @@ public class ItemVenda {
 		this.precoUnitario = precoUnitario;
 	}
 
-
 	// metodo para calcular total do valor do item
     public double TotalItem(){
             return this.quantidade * this.precoUnitario;

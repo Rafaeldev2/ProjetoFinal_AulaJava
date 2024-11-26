@@ -13,7 +13,6 @@ public class Cliente {
 		this.telefone = telefone;
 	}
 
-
 	public int getId() {
 		return id;
 	}
@@ -37,7 +36,6 @@ public class Cliente {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-
 
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;

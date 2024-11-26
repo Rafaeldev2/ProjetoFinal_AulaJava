@@ -1,12 +1,13 @@
 package cafeteria.vendas.clientes;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public interface IClienteService {
 
     public Cliente pesquisarCliente(int id);
-    public void criarCliente(Cliente c);
-    public void atualizarCliente(Cliente c);
-    public ArrayList<Cliente> listarClientes();
+    public void criarCliente(Cliente c, Connection conn);
+    public void atualizarCliente(Cliente c, Connection conn);
+    public ArrayList<Cliente> listarClientes(Connection conn);
 
 }

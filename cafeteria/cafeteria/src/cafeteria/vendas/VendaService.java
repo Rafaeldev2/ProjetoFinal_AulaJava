@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class VendaService implements IVendaService{
@@ -24,9 +25,9 @@ public class VendaService implements IVendaService{
        try {
            //  ver quais parâmetros iremos mandar o banco
            psInsert = conn.prepareStatement(insertSQL);
-           psInsert.setString(0, String.valueOf(v.getId()));;
-           psInsert.setString(1, String.valueOf(v.getDataHora()));
-           psInsert.setString(2, String.valueOf(v.getCliente()));
+           psInsert.setString(1, String.valueOf(v.getId()));;
+           psInsert.setString(2, String.valueOf(v.getDataHora()));
+           psInsert.setString(3, String.valueOf(v.getCliente()));
         //    psInsert.setString(3, String.valueOf(v.getItens()));
            psInsert.setString(4, String.valueOf(v.getDesconto()));
            psInsert.executeUpdate();          
@@ -49,9 +50,8 @@ public class VendaService implements IVendaService{
            psUpdate = conn.prepareStatement(updateSQL);
            psUpdate.setString(1, String.valueOf(v.getDataHora()));
            psUpdate.setString(2, String.valueOf(v.getCliente()));
-        //    psUpdate.setString(3,String.valueOf(v.getItens()));
-           psUpdate.setString(4,String.valueOf(v.getDesconto()));
-           psUpdate.setInt(5,v.getId());
+           psUpdate.setString(3,String.valueOf(v.getDesconto()));
+           psUpdate.setInt(4,v.getId());
 
            psUpdate.execute();
        } catch (SQLException sqle) {
@@ -67,36 +67,61 @@ public class VendaService implements IVendaService{
       
    }
 
-   
-   public ArrayList<VendaService> lerVenda (Venda v,Connection conn) {
-    ArrayList<VendaService> vendas = new ArrayList<>();
-    PreparedStatement psReads = null;
-        	try {
-			psReads = conn.prepareStatement(selectSQL);
-			ResultSet rs = psReads.executeQuery();
-			while (rs.next()) {
-                vendas.add(new Venda(rs.getInt("id"), rs.Timestamp("data_hora"), rs.getDouble(""),
-                rs.getInt("")));
-			}
-		} catch (SQLException sqle) {
-			System.err.println("Erro na consulta: " + sqle.getMessage());
-		} finally {
-			try {
-				psReads.close();
-			} catch (SQLException sqle) {
-				System.err.println("Nao foi possivel finalizar o statement: " + sqle.getMessage());
-			}
-			psReads = null;
-		}
-		return vendas;
-   }
 
+   
+
+   @Override
+   public void listarVenda(Connection conn) {
+        ArrayList<Venda> vendas = new ArrayList<>();
+        PreparedStatement psReads = null;
+                try {
+                psReads = conn.prepareStatement(selectSQL);
+                ResultSet rs = psReads.executeQuery();
+                while (rs.next()) {
+    
+                    vendas.add(new Venda(
+                        // Duas formas que podemos fazer
+
+                        // 0, 
+                        // null, 
+                        // null, 
+                        // null, 
+                        // 0, 
+                        // 0
+
+                        rs.getInt("id"), 
+                        rs.getTimestamp("data_hora"),  
+                        // argumentos adicionados para corresponder o construtor de venda
+                        null, 
+                        null, 
+                        rs.getInt("cliente_id"),
+                        rs.getDouble("desconto")
+                ));
+            }
+            } catch (SQLException sqle) {
+                System.err.println("Erro na consulta: " + sqle.getMessage());
+            } finally {
+                try {
+                    psReads.close();
+                } catch (SQLException sqle) {
+                    System.err.println("Nao foi possivel finalizar o statement: " + sqle.getMessage());
+                }
+                psReads = null;
+            }
+            return;
+       }
+    
+       
+
+   
 
    @Override
    public Venda pesquisarVenda(int id) {
        // TODO Auto-generated method stub
        return null;
    }
+
+
   
   
 }

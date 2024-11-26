@@ -11,7 +11,7 @@ public interface IVendaService {
    public Venda pesquisarVenda(int id);
    public void criarVenda(Venda v, Connection conn);
    public void atualizarVenda(Venda v,Connection conn);
-   public void listarVenda(Venda v);
+   public void listarVenda(Connection conn);
 }
 
 

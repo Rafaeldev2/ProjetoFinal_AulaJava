@@ -1,18 +1,19 @@
 package cafeteria.vendas;
-import java.time.LocalDate;
+import java.sql.Array;
+import java.sql.Timestamp;
 import  java.util.List;
 import cafeteria.vendas.clientes.Cliente;
 
 public class Venda {
     private int id;
-    private LocalDate dataHora;
-    private Cliente cliente;
+    private Timestamp dataHora;
+    private	Cliente cliente;
     private List<ItemVenda> itens;
     private double  desconto;
     private double total;
 
 
-public Venda(int id, LocalDate dataHora, Cliente cliente, List<ItemVenda> itens, double desconto, double total) {
+public Venda(int id, Timestamp dataHora, Cliente cliente, List<ItemVenda> itens, double desconto, double total) {
 		
 		this.id = id;
 		this.dataHora = dataHora;
@@ -22,12 +23,11 @@ public Venda(int id, LocalDate dataHora, Cliente cliente, List<ItemVenda> itens,
 		this.total = total;
 	}
 
-    
 public int getId() {
 	return id;
 }
 
-public LocalDate getDataHora() {
+public Timestamp getDataHora() {
 	return dataHora;
 }
 
@@ -51,7 +51,7 @@ public void setId(int id) {
 	this.id = id;
 }
 
-public void setDataHora(LocalDate dataHora) {
+public void setDataHora(Timestamp dataHora) {
 	this.dataHora = dataHora;
 }
 

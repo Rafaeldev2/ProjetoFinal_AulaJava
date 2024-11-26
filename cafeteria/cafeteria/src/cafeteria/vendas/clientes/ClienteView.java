@@ -148,7 +148,7 @@ public class ClienteView extends JInternalFrame {
 		id.setText(c.getId()+"");
 		nome.setText(c.getNome());
 		telefone.setText(c.getTelefone());
-		setupPesquisar();
+		setupConsultar();
 		System.out.println("==> onClickPesquisar");
 	}
 

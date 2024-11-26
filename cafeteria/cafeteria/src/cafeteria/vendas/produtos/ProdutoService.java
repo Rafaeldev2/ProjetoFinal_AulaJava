@@ -7,8 +7,8 @@ import java.sql.SQLException;
 
 public class ProdutoService implements IProdutoService{
 
-    private String insertSQL = "INSERT INTO produto(Id, nome, preco, medida) VALUES(?, ?, ?, ?, ?)";
-    private String updateSQL = "UPDATE produto SET nome = ?, preco = ?, medida = ? WHERE id = ?";
+    private String insertSQL = "INSERT INTO produto(id,nome,medida,preco,estoque) VALUES(?, ?, ?, ?, ?)";
+    private String updateSQL = "UPDATE produto SET nome = ?, medida = ?, preco= ?, estoque = ?  WHERE id = ?";
 
    
     @Override
