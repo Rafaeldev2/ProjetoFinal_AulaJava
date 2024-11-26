@@ -2,29 +2,57 @@ package cafeteria.vendas;
 
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class VendaService implements IVendaService{
    // o que vamos mandar para o banco de dados
 
 
-   // private String selectSQL = "SELECT id, nome, email, telefone FROM Clientes";
-   private String insertSQL = "INSERT INTO Venda(getId,getDataHora,getCliente,) VALUES(?, ?, ?)";
-   private String updateSQL = "UPDATE Clientes SET nome = ?, email = ?, telefone = ? WHERE id = ?";
+   private String selectSQL = "SELECT id, data_hora,cliente_id,desconto FROM venda";
+   private String insertSQL = "INSERT INTO venda(id, data_hora,cliente_id,desconto) VALUES(?, ?, ?, ?, ?)";
+   private String updateSQL = "UPDATE venda SET data_hora = ?, cliente_id = ?,Desconto = ?, WHERE id = ?";
    // private String deleteSQL = "DELETE FROM Clientes WHERE id = ?";
 
+    @Override
+   public void criarVenda(Venda v, Connection conn) {
+      
+       PreparedStatement psInsert = null;
+       try {
+           //  ver quais parâmetros iremos mandar o banco
+           psInsert = conn.prepareStatement(insertSQL);
+           psInsert.setString(0, String.valueOf(v.getId()));;
+           psInsert.setString(1, String.valueOf(v.getDataHora()));
+           psInsert.setString(2, String.valueOf(v.getCliente()));
+        //    psInsert.setString(3, String.valueOf(v.getItens()));
+           psInsert.setString(4, String.valueOf(v.getDesconto()));
+           psInsert.executeUpdate();          
+       } catch (SQLException sqle) {
+           System.err.println("Erro na insercao: " + sqle.getMessage());
+       } finally {
+           try {
+               psInsert.close();
+           } catch (SQLException sqle) {
+               System.err.println("Nao foi possivel finalizar o statement: " + sqle.getMessage());
+           }
+           psInsert = null;
+       }
+   }
 
    @Override
    public void atualizarVenda(Venda v,Connection conn) {
        PreparedStatement psUpdate = null;
        try {
            psUpdate = conn.prepareStatement(updateSQL);
-           psUpdate.setString(0, String.valueOf(v.getId()));
            psUpdate.setString(1, String.valueOf(v.getDataHora()));
-           psUpdate.setString(2, String.valueOf(v.));
-           psUpdate.setInt(3, index);
+           psUpdate.setString(2, String.valueOf(v.getCliente()));
+        //    psUpdate.setString(3,String.valueOf(v.getItens()));
+           psUpdate.setString(4,String.valueOf(v.getDesconto()));
+           psUpdate.setInt(5,v.getId());
+
            psUpdate.execute();
        } catch (SQLException sqle) {
            System.out.println("Erro na execucao da atualizacao: " + sqle.getMessage());
@@ -39,38 +67,28 @@ public class VendaService implements IVendaService{
       
    }
 
-
-   @Override
-   public void criarVenda(Venda v, Connection conn) {
-      
-       PreparedStatement psInsert = null;
-       try {
-           //  ver quais parâmetros iremos mandar o banco
-           psInsert = conn.prepareStatement(insertSQL);
-           psInsert.setString(0, String.valueOf(v.getId()));;
-           psInsert.setString(1, String.valueOf(v.getDataHora()));
-           psInsert.setString(2, String.valueOf(v.getCliente()));
-           psInsert.setString(3, String.valueOf(v.getItens()));
-           psInsert.setString(4, String.valueOf(v.getDesconto()));
-           psInsert.setString(5, String.valueOf(v.getTotal()));
-           psInsert.executeUpdate();          
-       } catch (SQLException sqle) {
-           System.err.println("Erro na insercao: " + sqle.getMessage());
-       } finally {
-           try {
-               psInsert.close();
-           } catch (SQLException sqle) {
-               System.err.println("Nao foi possivel finalizar o statement: " + sqle.getMessage());
-           }
-           psInsert = null;
-       }
-   }
-
-
-   @Override
-   public void listarVenda(Venda v) {
-       // TODO Auto-generated method stub
-      
+   
+   public ArrayList<VendaService> lerVenda (Venda v,Connection conn) {
+    ArrayList<VendaService> vendas = new ArrayList<>();
+    PreparedStatement psReads = null;
+        	try {
+			psReads = conn.prepareStatement(selectSQL);
+			ResultSet rs = psReads.executeQuery();
+			while (rs.next()) {
+                vendas.add(new Venda(rs.getInt("id"), rs.Timestamp("data_hora"), rs.getDouble(""),
+                rs.getInt("")));
+			}
+		} catch (SQLException sqle) {
+			System.err.println("Erro na consulta: " + sqle.getMessage());
+		} finally {
+			try {
+				psReads.close();
+			} catch (SQLException sqle) {
+				System.err.println("Nao foi possivel finalizar o statement: " + sqle.getMessage());
+			}
+			psReads = null;
+		}
+		return vendas;
    }
 
 

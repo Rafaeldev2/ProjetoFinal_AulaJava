@@ -9,7 +9,7 @@ public class Venda {
     private Cliente cliente;
     private List<ItemVenda> itens;
     private double  desconto;
-    private double total;   
+    private double total;
 
 
 public Venda(int id, LocalDate dataHora, Cliente cliente, List<ItemVenda> itens, double desconto, double total) {

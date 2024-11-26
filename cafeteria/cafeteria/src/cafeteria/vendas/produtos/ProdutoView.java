@@ -170,7 +170,11 @@ public class ProdutoView extends JInternalFrame {
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
 	 */
 	protected void onClickPesquisar() {
-		// TODO: Implementar
+		Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()));
+		id.setText(p.getId()+"");
+		nome.setText(p.getNome());
+		preco.setText(p.getPreco()+"");
+		setupPesquisar();
 		System.out.println("==> onClickPesquisar");
 	}
 

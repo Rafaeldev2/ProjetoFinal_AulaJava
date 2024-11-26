@@ -7,9 +7,9 @@ import java.sql.SQLException;
 // connecção banco de dados
 
 public class DatabaseConnection{
-    private static final String URL = "";
-    private static final String USER = "";
-    private static final String PASSWORD = "";
+    private static final String URL = "http://localhost:8880/browser/";
+    private static final String USER = "senai";
+    private static final String PASSWORD = "senai";
 
     // connecção
       public static Connection getConnection() throws SQLException {
