@@ -16,6 +16,7 @@ public class VendaService implements IVendaService{
    private String selectSQL = "SELECT id, data_hora,cliente_id,desconto FROM venda";
    private String insertSQL = "INSERT INTO venda(id, data_hora,cliente_id,desconto) VALUES(?, ?, ?, ?, ?)";
    private String updateSQL = "UPDATE venda SET data_hora = ?, cliente_id = ?,Desconto = ?, WHERE id = ?";
+   private String pesquisaSQL = "SELECT * FROM venda WHERE id = ?";
    // private String deleteSQL = "DELETE FROM Clientes WHERE id = ?";
 
     @Override
@@ -116,12 +117,30 @@ public class VendaService implements IVendaService{
    
 
    @Override
-   public Venda pesquisarVenda(int id) {
-       // TODO Auto-generated method stub
-       return null;
-   }
+   public Venda pesquisarVenda(int id,Connection conn) {
+    // Venda venda = null;
+    // try (PreparedStatement stmt = Connection.prepareStatement(pesquisaSQL)) {
+    //     stmt.setInt(1, id); // Substitui o placeholder ? pelo ID informado
 
+    //     try (ResultSet rs = stmt.executeQuery()) {
+    //         if (rs.next()) {
+    //             // Extrai os dados da venda do ResultSet
+    //             int vendaId = rs.getInt("id");  
+    //             String produto = rs.getString("produto");
+    //             double valor = rs.getDouble("valor");
 
-  
-  
+    //             // Cria o objeto Venda com os dados obtidos
+    //             venda = new Venda(vendaId, produto, valor);
+    //         }
+    //     }
+    // } catch (SQLException e) {
+    //     e.printStackTrace();
+    //     System.out.println("Erro ao pesquisar venda: " + e.getMessage());
+    // }
+
+    // return venda;
+
+    
+        return null;
+    }
 }
