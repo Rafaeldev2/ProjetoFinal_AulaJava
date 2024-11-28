@@ -151,6 +151,8 @@ public class ClienteView extends JInternalFrame {
 		
 		nome.setText(c.getNome());
 		telefone.setText(c.getTelefone());
+		
+		
 		setupConsultar();
 		System.out.println("==> onClickPesquisar");
 	}
@@ -160,8 +162,15 @@ public class ClienteView extends JInternalFrame {
 	 * cliente
 	 */
 	protected void onClickIncluirNovoCliente() {
-		// TODO: Implementar
-		System.out.println("==> onClickIncluirNovoCliente");
+		// System.out.println(id.getText());
+
+		// Cliente c = service.criarCliente(Integer.parseInt(id.getText()), DatabaseConnection.g);
+
+		// nome.setText(c.getNome());
+		// telefone.setText(c.getTelefone());
+		
+		// System.out.println("==> onClickIncluirNovoCliente");
+		return;
 	}
 
 	/**

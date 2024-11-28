@@ -9,13 +9,13 @@ import java.util.ArrayList;
 public class ClienteService implements IClienteService {
 
     private String selectSQL = "SELECT id, nome,telefone FROM cliente";
-    private String insertSQL = "INSERT INTO cliente(id, nome, telefone) VALUES(?, ?, ?, ?, ?)";
+    String insertSQL = "INSERT INTO cliente(id, nome, telefone) VALUES(?, ?, ?, ?, ?)";
     private String updateSQL = "UPDATE cliente SET nome = ?, telefone = ? WHERE id = ?";
 
     @Override
     public void criarCliente(Cliente c, Connection conn) {
         PreparedStatement psInsert = null;
-
+       
         try {
             psInsert = conn.prepareStatement(insertSQL);
             psInsert.setString(1, String.valueOf(c.getId()));
