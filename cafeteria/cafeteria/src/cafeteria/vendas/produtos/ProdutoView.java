@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import cafeteria.connectionSQL.DatabaseConnection;
+
 public class ProdutoView extends JInternalFrame {
 
 	private static final String TITULO = "Cadastro de Produto";
@@ -170,8 +172,9 @@ public class ProdutoView extends JInternalFrame {
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
 	 */
 	protected void onClickPesquisar() {
-		Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()));
-		id.setText(p.getId()+"");
+		System.out.println(id.getText());
+		Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()),DatabaseConnection.getConnection());
+		
 		nome.setText(p.getNome());
 		preco.setText(p.getPreco()+"");
 		setupConsultar();
