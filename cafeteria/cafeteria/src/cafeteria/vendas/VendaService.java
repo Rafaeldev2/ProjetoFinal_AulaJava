@@ -69,8 +69,6 @@ public class VendaService implements IVendaService{
    }
 
 
-   
-
    @Override
    public void listarVenda(Connection conn) {
         ArrayList<Venda> vendas = new ArrayList<>();
@@ -111,36 +109,40 @@ public class VendaService implements IVendaService{
             }
             return;
        }
-    
-       
 
-   
 
    @Override
-   public Venda pesquisarVenda(int id,Connection conn) {
-    // Venda venda = null;
-    // try (PreparedStatement stmt = Connection.prepareStatement(pesquisaSQL)) {
-    //     stmt.setInt(1, id); // Substitui o placeholder ? pelo ID informado
-
-    //     try (ResultSet rs = stmt.executeQuery()) {
-    //         if (rs.next()) {
-    //             // Extrai os dados da venda do ResultSet
-    //             int vendaId = rs.getInt("id");  
-    //             String produto = rs.getString("produto");
-    //             double valor = rs.getDouble("valor");
-
-    //             // Cria o objeto Venda com os dados obtidos
-    //             venda = new Venda(vendaId, produto, valor);
-    //         }
-    //     }
-    // } catch (SQLException e) {
-    //     e.printStackTrace();
-    //     System.out.println("Erro ao pesquisar venda: " + e.getMessage());
-    // }
-
-    // return venda;
-
+   public Venda pesquisarVenda(int id, Connection conn) {
+    PreparedStatement psReads = null;
+    Venda venda = null; 
     
-        return null;
+    try{
+        psReads = conn.prepareStatement(pesquisaSQL);
+        psReads.setInt(1, id);
+        ResultSet rs = psReads.executeQuery();
+    
+        if(rs.next()) {
+            venda = new Venda(
+                rs.getInt("id"),
+                rs.getTimestamp("data_hora"),
+                rs.getInt("cliente_id"),
+                rs.getDouble("desconto")
+            );
+        }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao pesquisar venda: " + e.getMessage());
+        } finally {
+            try {
+                if (psReads != null) {
+                    psReads.close(); 
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return venda; 
+ 
     }
 }

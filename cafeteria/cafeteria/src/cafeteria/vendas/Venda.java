@@ -23,6 +23,7 @@ public Venda(int id, Timestamp dataHora, Cliente cliente, List<ItemVenda> itens,
 		this.total = total;
 	}
 
+
 public int getId() {
 	return id;
 }

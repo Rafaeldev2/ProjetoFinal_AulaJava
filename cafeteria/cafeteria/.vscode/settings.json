@@ -1,7 +1,10 @@
 {
-    "java.project.sourcePaths": ["src"],
+    "java.project.sourcePaths": [
+        "src"
+    ],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "lib/**/*.jar"
+        "lib/postgresql-42.7.4.jar",
+        "/home/anselmo/Desktop/Cursos/TrabalhoJava/ProjetoFinal_AulaJava/cafeteria/cafeteria/lib/postgresql-42.7.4.jar"
     ]
 }

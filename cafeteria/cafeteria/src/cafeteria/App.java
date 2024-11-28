@@ -11,7 +11,6 @@ public class App {
 	public static void main(String[] args) {
 
 		Locale.setDefault(Locale.forLanguageTag("pt-BR"));
-
         try {
 			
 			// Temas específicos de plataforma

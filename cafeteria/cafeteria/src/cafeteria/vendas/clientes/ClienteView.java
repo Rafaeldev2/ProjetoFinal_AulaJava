@@ -12,6 +12,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
+import cafeteria.connectionSQL.DatabaseConnection;
+
 public class ClienteView extends JInternalFrame {
 
 	private static final String TITULO = "Cadastro de Cliente";
@@ -144,7 +146,7 @@ public class ClienteView extends JInternalFrame {
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
 	 */
 	protected void onClickPesquisar() {
-		Cliente c = service.pesquisarCliente(Integer.parseInt(id.getText()));
+		Cliente c = service.pesquisarCliente(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
 		id.setText(c.getId()+"");
 		nome.setText(c.getNome());
 		telefone.setText(c.getTelefone());
