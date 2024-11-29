@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ClienteService implements IClienteService {
 
-    private String selectSQL = "SELECT * FROM cliente";
+    private String selectSQL = "SELECT * FROM cliente WHERE id = ?";
     private  String insertSQL = "INSERT INTO cliente(nome, telefone) VALUES(?, ?)";
     private String updateSQL = "UPDATE cliente SET nome = ?, telefone = ? WHERE id = ?";
 
@@ -94,8 +94,10 @@ public class ClienteService implements IClienteService {
     public Cliente pesquisarCliente(int id, Connection conn) {
         Cliente clientes = null;
         PreparedStatement psReads = null;
+        
         try {
             psReads = conn.prepareStatement(selectSQL);
+            psReads.setInt(1, id); // filtra as pesquisas com base no id
             ResultSet rs = psReads.executeQuery();
             if (rs.next()) {
                 int cliente_id = rs.getInt("id");

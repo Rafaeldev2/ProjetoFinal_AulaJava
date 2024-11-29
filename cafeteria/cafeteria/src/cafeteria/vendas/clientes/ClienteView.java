@@ -8,10 +8,12 @@ import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
+import cafeteria.TelaPrincipal;
 import cafeteria.connectionSQL.DatabaseConnection;
 
 public class ClienteView extends JInternalFrame {
@@ -176,7 +178,9 @@ public class ClienteView extends JInternalFrame {
 
 
 	protected void onClickIncluirNovoCliente() {
-	
+
+		btPesquisar.setEnabled(false);
+		btNovoCliente.setEnabled(false);
 		id.setEnabled(false);
 		nome.setEnabled(true);
 		telefone.setEnabled(true);
@@ -189,8 +193,9 @@ public class ClienteView extends JInternalFrame {
 	 * Executa as tarefas para voltar a inclusão de um cliente
 	 */
 	protected void onClickVoltar() {
-		// TODO: Implementar
 		System.out.println("==> onClickVoltar");
+		this.dispose();
+
 	}
 
 	/**
@@ -199,7 +204,16 @@ public class ClienteView extends JInternalFrame {
 	protected void onClickSalvar() {
 		Cliente c = new Cliente(nome.getText(), telefone.getText());
 		service.criarCliente(c, DatabaseConnection.getConnection());
+		JOptionPane.showMessageDialog(null,"Cliente cadastrado com sucesso!");
 		
+		id.setEnabled(true);
+		nome.setEnabled(false);
+		telefone.setEnabled(false);
+		btSalvar.setEnabled(false);
+		btVoltar.setEnabled(false);
+		btNovoCliente.setEnabled(true);
+		btPesquisar.setEnabled(true);
+
 		System.out.println("==> onClickSalvar");
 	}
 

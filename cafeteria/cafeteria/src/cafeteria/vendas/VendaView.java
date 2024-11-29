@@ -331,6 +331,7 @@ public class VendaView extends JInternalFrame {
 
 	/**
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID cliente informado
+	 * 
 	 */
 	protected void onClickBuscarCliente() {
 		System.out.println(id.getText());
