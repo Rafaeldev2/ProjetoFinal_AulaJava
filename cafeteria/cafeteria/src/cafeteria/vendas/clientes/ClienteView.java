@@ -161,7 +161,7 @@ public class ClienteView extends JInternalFrame {
 	/**
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
 	 */
-	protected void onClickPesquisar() {
+	protected void onClickPesquisar() {	
 		System.out.println(id.getText());
 		Cliente c = service.pesquisarCliente(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
 		nome.setText(c.getNome());

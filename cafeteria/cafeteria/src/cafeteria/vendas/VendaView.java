@@ -28,6 +28,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import cafeteria.connectionSQL.DatabaseConnection;
+import cafeteria.vendas.clientes.Cliente;
 import cafeteria.vendas.clientes.IClienteService;
 import cafeteria.vendas.produtos.IProdutoService;
 import cafeteria.vendas.produtos.Produto;
@@ -51,12 +53,15 @@ public class VendaView extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 
 	private JTextField id;
+	private JTextField idCliente;
+	private JFormattedTextField dataHora;
 	private JTextField nomeCliente;
 	private JComboBox<Produto> produto;
 	private JFormattedTextField quantidade;
 	private JFormattedTextField desconto;
 	private JFormattedTextField totalVenda;
 	private JTextField medida;
+
 
 	private JTable table;
 	private DefaultTableModel model;
@@ -70,6 +75,8 @@ public class VendaView extends JInternalFrame {
 	private IVendaService vendaService = null;
 	private IClienteService clienteService = null;
 	private IProdutoService produtoService = null;
+
+
 
 	private List<ItemVenda> itens;
 
@@ -326,8 +333,17 @@ public class VendaView extends JInternalFrame {
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID cliente informado
 	 */
 	protected void onClickBuscarCliente() {
-		// TODO: Implementar
-		System.out.println("==> onClickBuscarCliente");
+		System.out.println(id.getText());
+		Venda v = vendaService.pesquisarVenda(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
+
+		dataHora.setText(v.getDataHora().toString());
+		idCliente.setText(v.getCliente() + "");
+		desconto.setText(v.getDesconto() + "");
+		
+	
+		System.out.println(dataHora);
+		System.out.println(idCliente);
+		System.out.println(desconto);
 	}
 
 	/**
