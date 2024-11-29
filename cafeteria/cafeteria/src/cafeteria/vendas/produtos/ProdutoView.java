@@ -15,6 +15,7 @@ import javax.swing.SwingConstants;
 
 import cafeteria.connectionSQL.DatabaseConnection;
 
+
 public class ProdutoView extends JInternalFrame {
 
 	private static final String TITULO = "Cadastro de Produto";
@@ -173,11 +174,14 @@ public class ProdutoView extends JInternalFrame {
 	 */
 	protected void onClickPesquisar() {
 		System.out.println(id.getText());
-		Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()),DatabaseConnection.getConnection());
-		
+		Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
 		nome.setText(p.getNome());
 		preco.setText(p.getPreco()+"");
+		medida.setSelectedIndex(isSelected);
+		
 		setupConsultar();
+		btVoltar.setEnabled(true);
+		btSalvar.setEnabled(true);
 		System.out.println("==> onClickPesquisar");
 	}
 
@@ -186,7 +190,13 @@ public class ProdutoView extends JInternalFrame {
 	 * produto
 	 */
 	protected void onClickIncluirNovoProduto() {
-		// TODO: Implementar
+		
+		id.setEnabled(false);
+		nome.setEnabled(true);
+		preco.setEnabled(true);
+
+		btVoltar.setEnabled(true);
+		btSalvar.setEnabled(true);
 		System.out.println("==> onClickIncluirNovoProduto");
 	}
 
