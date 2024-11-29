@@ -336,17 +336,29 @@ public class VendaView extends JInternalFrame {
 	protected void onClickBuscarCliente() {
 		System.out.println(id.getText());
 		Venda v = vendaService.pesquisarVenda(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
-
-		dataHora.setText(v.getDataHora().toString());
+	
+		if (v.getDataHora() != null) {
+			dataHora.setText(v.getDataHora().toString());
+		} else {
+			dataHora.setText("");
+		}
+	
 		idCliente.setText(v.getCliente() + "");
 		desconto.setText(v.getDesconto() + "");
-		
+	
+		// Exiba os itens da venda
+		List<ItemVenda> itens = v.getItens();
+		for (ItemVenda item : itens) {
+			System.out.println("Produto: " + item.getNome());
+			System.out.println("Quantidade: " + item.getQuantidade());
+			System.out.println("Preço: " + item.getPrecoUnitario());
+			// Adicione a lógica para exibir os itens na tela
+		}
 	
 		System.out.println(dataHora);
 		System.out.println(idCliente);
 		System.out.println(desconto);
 	}
-
 	/**
 	 * Executa as tarefas para cancelar a venda
 	 */

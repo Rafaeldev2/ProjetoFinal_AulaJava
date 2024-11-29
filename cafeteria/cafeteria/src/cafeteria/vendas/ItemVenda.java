@@ -23,7 +23,7 @@ public class ItemVenda {
 		return id;
 	}
 
-	public String getNomeProduto() {
+	public String getNome() {
 		return nomeProduto;
 	}
 
