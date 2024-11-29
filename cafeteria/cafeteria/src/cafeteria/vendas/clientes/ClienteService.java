@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 public class ClienteService implements IClienteService {
 
-    private String selectSQL = "SELECT id, nome,telefone FROM cliente";
-    String insertSQL = "INSERT INTO cliente(id, nome, telefone) VALUES(?, ?, ?, ?, ?)";
+    private String selectSQL = "SELECT * FROM cliente";
+    private  String insertSQL = "INSERT INTO cliente(nome, telefone) VALUES(?, ?)";
     private String updateSQL = "UPDATE cliente SET nome = ?, telefone = ? WHERE id = ?";
 
     @Override
@@ -18,9 +18,9 @@ public class ClienteService implements IClienteService {
        
         try {
             psInsert = conn.prepareStatement(insertSQL);
-            psInsert.setString(1, String.valueOf(c.getId()));
-            psInsert.setString(2, String.valueOf(c.getNome()));
-            psInsert.setString(3, String.valueOf(c.getTelefone()));
+            // psInsert.setString(1, String.valueOf(c.getId()));
+            psInsert.setString(1,  String.valueOf(c.getNome()));
+            psInsert.setString(2, String.valueOf(c.getTelefone()));
             psInsert.executeUpdate();
         } catch (SQLException sqle) {
             System.err.println("Erro na insercao: " + sqle.getMessage());

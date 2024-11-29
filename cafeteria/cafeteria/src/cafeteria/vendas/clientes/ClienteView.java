@@ -143,34 +143,46 @@ public class ClienteView extends JInternalFrame {
 	}
 
 	/**
+	 * Prepara o frame para a ação de incluir
+	 */
+	public void setupIncluir() {
+		// configura os botões de ação
+		btSalvar.setEnabled(true);
+		btVoltar.setEnabled(true);
+		btNovoCliente.setEnabled(true);
+		btPesquisar.setEnabled(true);
+
+		// configura o comportamento dos campos
+		id.setEnabled(false);
+		nome.setEnabled(true);
+		telefone.setEnabled(true);
+	}
+
+	/**
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
 	 */
 	protected void onClickPesquisar() {
 		System.out.println(id.getText());
 		Cliente c = service.pesquisarCliente(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
-		
 		nome.setText(c.getNome());
 		telefone.setText(c.getTelefone());
 		
-		
 		setupConsultar();
+		
+		btVoltar.setEnabled(true);
+		btSalvar.setEnabled(true);
 		System.out.println("==> onClickPesquisar");
 	}
 
-	/**
-	 * Executa as tarefas para preparar a interface para a inclusão de um novo
-	 * cliente
-	 */
+
 	protected void onClickIncluirNovoCliente() {
-		// System.out.println(id.getText());
+	
+		id.setEnabled(false);
+		nome.setEnabled(true);
+		telefone.setEnabled(true);
+		btVoltar.setEnabled(true);
+		btSalvar.setEnabled(true);
 
-		// Cliente c = service.criarCliente(Integer.parseInt(id.getText()), DatabaseConnection.g);
-
-		// nome.setText(c.getNome());
-		// telefone.setText(c.getTelefone());
-		
-		// System.out.println("==> onClickIncluirNovoCliente");
-		return;
 	}
 
 	/**
@@ -185,7 +197,9 @@ public class ClienteView extends JInternalFrame {
 	 * Executa as tarefas para salvar a inclusão de um novo cliente
 	 */
 	protected void onClickSalvar() {
-		// TODO: Implementar
+		Cliente c = new Cliente(nome.getText(), telefone.getText());
+		service.criarCliente(c, DatabaseConnection.getConnection());
+		
 		System.out.println("==> onClickSalvar");
 	}
 

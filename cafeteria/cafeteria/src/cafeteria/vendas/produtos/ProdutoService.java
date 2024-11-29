@@ -5,9 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import cafeteria.vendas.clientes.Cliente;
-
-
 public class ProdutoService implements IProdutoService{
 
     private String selectSQL = "SELECT id, nome,telefone FROM cliente";

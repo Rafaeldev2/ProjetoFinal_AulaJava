@@ -121,14 +121,14 @@ public class VendaService implements IVendaService{
         psReads.setInt(1, id);
         ResultSet rs = psReads.executeQuery();
     
-        if(rs.next()) {
-            venda = new Venda(
-                rs.getInt("id"),
-                rs.getTimestamp("data_hora"),
-                rs.getInt("cliente_id"),
-                rs.getDouble("desconto")
-            );
-        }
+        // if(rs.next()) {
+        //     venda = new Venda(
+        //         rs.getInt("id"),
+        //         rs.getTimestamp("data_hora"),
+        //         rs.getInt("cliente_id"),
+        //         rs.getDouble("desconto")
+        //     );
+        // }
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Erro ao pesquisar venda: " + e.getMessage());

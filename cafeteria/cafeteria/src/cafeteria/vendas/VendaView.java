@@ -351,8 +351,8 @@ public class VendaView extends JInternalFrame {
 	 */
 	protected void onClickAdicionarItemVenda() {
 		// TODO: Criar de fato uma venda
-		ItemVenda venda = new ItemVenda();
-		this.itens.add(venda);
+		//ItemVenda venda = new ItemVenda();
+		//this.itens.add(venda);
 
 		// TODO: Substituir as duas próximas linhas pela inclusão de fato da venda
 		int id = this.model.getRowCount() + 1; // ID sequencial
