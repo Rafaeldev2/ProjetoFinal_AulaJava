@@ -7,8 +7,8 @@ import java.sql.SQLException;
 
 public class ProdutoService implements IProdutoService{
 
-    private String selectSQL = "SELECT id, nome,telefone FROM cliente";
-    private String insertSQL = "INSERT INTO produto(id,nome,medida,preco,estoque) VALUES(?, ?, ?, ?, ?)";
+    private String selectSQL = "SELECT * FROM produto WHERE id = ?";
+    private String insertSQL = "INSERT INTO produto(id,nome,medida,preco) VALUES(?, ?, ?, ?, ?)";
     private String updateSQL = "UPDATE produto SET nome = ?, medida = ?, preco= ?, estoque = ?  WHERE id = ?";
 
    
@@ -18,10 +18,10 @@ public class ProdutoService implements IProdutoService{
        try {
         //  ver quais parâmetros iremos mandar o banco
         psInsert = conn.prepareStatement(insertSQL);
-        psInsert.setString(1, String.valueOf(p.getId()));;
-        psInsert.setString(2, String.valueOf(p.getNome()));
-        psInsert.setString(3, String.valueOf(p.getPreco()));
-        psInsert.setString(4, String.valueOf(p.getMedida()));
+        psInsert.setInt(1, p.getId());
+        psInsert.setString(2, p.getNome());
+        psInsert.setInt(3, p.getMedida().getCodigo());
+        psInsert.setDouble(4, p.getPreco());
         psInsert.executeUpdate();          
     } catch (SQLException sqle) {
         System.err.println("Erro na insercao: " + sqle.getMessage());
@@ -41,11 +41,10 @@ public class ProdutoService implements IProdutoService{
         PreparedStatement psUpdate = null;
         try {
             psUpdate = conn.prepareStatement(updateSQL);
-            psUpdate.setString(1, String.valueOf(p.getNome()));
-            psUpdate.setString(2, String.valueOf(p.getPreco()));
-            psUpdate.setString(3,String.valueOf(p.getMedida()));
-            psUpdate.setInt(4,p.getId());
- 
+            psUpdate.setString(1, p.getNome());
+            psUpdate.setInt(2, p.getMedida().getCodigo()); // Usando o código da UnidadeMedida
+            psUpdate.setDouble(3, p.getPreco());
+            psUpdate.setInt(4, p.getId());
             psUpdate.execute();
         } catch (SQLException sqle) {
             System.out.println("Erro na execucao da atualizacao: " + sqle.getMessage());
@@ -67,12 +66,14 @@ public class ProdutoService implements IProdutoService{
         PreparedStatement psReads = null;
         try {
             psReads = conn.prepareStatement(selectSQL);
+            psReads.setInt(1, id);
             ResultSet rs = psReads.executeQuery();
             if (rs.next()) {
                 int produto_id = rs.getInt("id");
                 String nome = rs.getString("nome");
-                Double preco = rs.getDouble("telefone");
-                UnidadeMedida medida = UnidadeMedida.valueOf(rs.getString("medida").toUpperCase());
+                Double preco = rs.getDouble("preco");
+                int codigoMedida = rs.getInt("medida");
+                UnidadeMedida medida = UnidadeMedida.fromCodigo(codigoMedida);
 
                 produtos = new Produto(produto_id,nome,preco,medida);
                 return produtos;

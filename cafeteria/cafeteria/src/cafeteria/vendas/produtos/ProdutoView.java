@@ -10,10 +10,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import cafeteria.connectionSQL.DatabaseConnection;
+import cafeteria.vendas.clientes.Cliente;
 
 
 public class ProdutoView extends JInternalFrame {
@@ -174,15 +176,29 @@ public class ProdutoView extends JInternalFrame {
 	 */
 	protected void onClickPesquisar() {
 		System.out.println(id.getText());
-		Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
-		nome.setText(p.getNome());
-		preco.setText(p.getPreco()+"");
-		medida.setSelectedIndex(isSelected);
-		
-		setupConsultar();
-		btVoltar.setEnabled(true);
-		btSalvar.setEnabled(true);
-		System.out.println("==> onClickPesquisar");
+    
+    try {
+        int produtoId = Integer.parseInt(id.getText());
+        Produto p = service.pesquisarProduto(produtoId, DatabaseConnection.getConnection());
+        
+        if (p != null) {
+            nome.setText(p.getNome());
+            preco.setText(String.valueOf(p.getPreco()));
+            UnidadeMedida unidade = p.getMedida();
+            medida.setSelectedItem(unidade);
+            
+            setupConsultar();
+            btVoltar.setEnabled(true);
+            btSalvar.setEnabled(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Produto não encontrado.");
+        }
+        System.out.println("==> onClickPesquisar");
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "ID inválido. Por favor, insira um número.");
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Erro ao pesquisar produto: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -191,10 +207,12 @@ public class ProdutoView extends JInternalFrame {
 	 */
 	protected void onClickIncluirNovoProduto() {
 		
+		
+		btPesquisar.setEnabled(false);
 		id.setEnabled(false);
 		nome.setEnabled(true);
 		preco.setEnabled(true);
-
+		medida.setEnabled(true);
 		btVoltar.setEnabled(true);
 		btSalvar.setEnabled(true);
 		System.out.println("==> onClickIncluirNovoProduto");
@@ -204,15 +222,28 @@ public class ProdutoView extends JInternalFrame {
 	 * Executa as tarefas para voltar a inclusão de um produto
 	 */
 	protected void onClickVoltar() {
-		// TODO: Implementar
+		
 		System.out.println("==> onClickVoltar");
+		this.dispose();
 	}
 
 	/**
 	 * Executa as tarefas para salvar a inclusão de um novo produto
 	 */
 	protected void onClickSalvar() {
-		// TODO: Implementar
+		
+		Produto p = new Produto(nome.getText(), preco.getText(), );
+		service.criarProduto(p, DatabaseConnection.getConnection());
+		JOptionPane.showMessageDialog(null,"Cliente cadastrado com sucesso!");
+		
+		id.setEnabled(true);
+		nome.setEnabled(false);
+		preco.setEnabled(false);
+		btSalvar.setEnabled(false);
+		btVoltar.setEnabled(false);
+		btNovoProduto.setEnabled(true);
+		btPesquisar.setEnabled(true);
+
 		System.out.println("==> onClickSalvar");
 	}
 }

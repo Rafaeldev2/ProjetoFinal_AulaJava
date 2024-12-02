@@ -186,7 +186,7 @@ public class ClienteView extends JInternalFrame {
 		telefone.setEnabled(true);
 		btVoltar.setEnabled(true);
 		btSalvar.setEnabled(true);
-
+		System.out.println("==> onClickIncluirNovoCliente");
 	}
 
 	/**
