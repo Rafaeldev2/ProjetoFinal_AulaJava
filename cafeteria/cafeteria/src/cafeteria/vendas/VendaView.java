@@ -1,5 +1,11 @@
 package cafeteria.vendas;
 
+import cafeteria.connectionSQL.DatabaseConnection;
+import cafeteria.vendas.clientes.Cliente;
+import cafeteria.vendas.clientes.IClienteService;
+import cafeteria.vendas.produtos.EstoqueProduto;
+import cafeteria.vendas.produtos.IProdutoService;
+import cafeteria.vendas.produtos.Produto;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -9,16 +15,17 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,12 +34,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
-import cafeteria.connectionSQL.DatabaseConnection;
-import cafeteria.vendas.clientes.Cliente;
-import cafeteria.vendas.clientes.IClienteService;
-import cafeteria.vendas.produtos.IProdutoService;
-import cafeteria.vendas.produtos.Produto;
 
 public class VendaView extends JInternalFrame {
 
@@ -124,21 +125,26 @@ public class VendaView extends JInternalFrame {
 		lbProduto.setBounds(31, 106, 60, 17);
 		getContentPane().add(lbProduto);
 
-		// TODO: Carregar uma lista dos produtos cadastrados
-		List<Produto> produtos = new ArrayList<>();
-		produto = new JComboBox<>(produtos.toArray(new Produto[0]));
-		produto.setBounds(109, 104, 600, 21);
-		getContentPane().add(produto);
-		produto.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent event) {
-				if (event.getStateChange() == ItemEvent.SELECTED) {
-					Produto produtoSelecionado = (Produto) event.getItem();
-					// TODO: Completar o código abaixo para atualizar o valor da medida
-					// medida.setText(produtoSelecionado);
+		// Carregar produtos
+		List<Produto> produtos = produtoService.listarProdutos(DatabaseConnection.getConnection());
+		if (produtos != null && !produtos.isEmpty()) {
+			produto = new JComboBox<>(produtos.toArray(new Produto[0]));
+			produto.setBounds(109, 104, 600, 21);
+			getContentPane().add(produto);
+	
+			produto.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent event) {
+					if (event.getStateChange() == ItemEvent.SELECTED) {
+						Produto produtoSelecionado = (Produto) event.getItem();
+						medida.setText(produtoSelecionado.getMedida().toString()); // Atualiza a medida
+						quantidade.setValue(0); // Reseta a quantidade para 0 ao selecionar um novo produto
+					}
 				}
-			}
-		});
+			});
+		} else {
+			JOptionPane.showMessageDialog(this, "Nenhum produto encontrado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+		}
 
 		btConfirmar = new JButton("Registrar Venda");
 		btConfirmar.addActionListener(new ActionListener() {
@@ -164,7 +170,7 @@ public class VendaView extends JInternalFrame {
 		btBuscarCliente.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onClickBuscarCliente();
+				onClickPesquisarCliente();
 			}
 		});
 		btBuscarCliente.setBounds(235, 35, 120, 27);
@@ -180,14 +186,15 @@ public class VendaView extends JInternalFrame {
 
 		medida = new JTextField();
 		medida.setBounds(109, 137, 114, 21);
+		medida.setEditable(false);
 		getContentPane().add(medida);
 		medida.setColumns(10);
-		medida.setEditable(false);
 
 		NumberFormat integerFormat = NumberFormat.getIntegerInstance();
 		quantidade = new JFormattedTextField(integerFormat);
 		quantidade.setHorizontalAlignment(SwingConstants.RIGHT);
 		quantidade.setBounds(109, 170, 114, 21);
+		quantidade.setEditable(false);
 		getContentPane().add(quantidade);
 		quantidade.setColumns(10);
 
@@ -293,6 +300,7 @@ public class VendaView extends JInternalFrame {
 			}
 		});
 
+		desconto.addPropertyChangeListener("value", evt -> atualizarTotalVenda());
 	}
 
 	protected void onClickRemoverItensSelecionados() {
@@ -310,6 +318,19 @@ public class VendaView extends JInternalFrame {
 			this.itens.remove(linha);
 		}
 	}
+
+	// private void carregarProdutos() {
+    //     List<Produto> produtos = produtoService.listarProdutos(DatabaseConnection.getConnection());
+    //     produto.removeAllItems(); // Limpa os itens existentes
+    //     for (Produto p : produtos) {
+    //         produto.addItem(p); // Adiciona cada produto ao JComboBox
+    //     }
+	// 	if (!produtos.isEmpty()) {
+	// 		Produto primeiroProduto = produtos.get(0); // Obtém o primeiro produto
+	// 		produto.setSelectedItem(primeiroProduto); // Seleciona o primeiro produto no JComboBox
+	// 		medida.setText(primeiroProduto.getMedida().toString()); // Define a medida do primeiro produto
+	// 	}
+    // }
 
 	/**
 	 * Prepara o frame para a ação de registrar uma venda
@@ -333,59 +354,103 @@ public class VendaView extends JInternalFrame {
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID cliente informado
 	 * 
 	 */
-	protected void onClickBuscarCliente() {
-		System.out.println(id.getText());
-		Venda v = vendaService.pesquisarVenda(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
-	
-		if (v.getDataHora() != null) {
-			dataHora.setText(v.getDataHora().toString());
-		} else {
-			dataHora.setText("");
+	protected void onClickPesquisarCliente() {
+		String clienteIdStr = id.getText().trim();
+		if (!clienteIdStr.isEmpty()) {
+			try {
+				int clienteId = Integer.parseInt(clienteIdStr);
+				Cliente cliente = clienteService.pesquisarCliente(clienteId, DatabaseConnection.getConnection());
+				if (cliente != null) {
+					nomeCliente.setText(cliente.getNome());
+					produto.setEnabled(true);
+					quantidade.setEditable(true);
+					desconto.setEditable(true);
+					btAdicionarItem.setEnabled(true);
+					btRemoverItensSelecionados.setEnabled(true);
+					btConfirmar.setEnabled(true);
+				} else {
+					JOptionPane.showMessageDialog(this, "Cliente não encontrado.", "Erro!", JOptionPane.ERROR_MESSAGE);
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "ID de cliente inválido.", "Erro!", JOptionPane.ERROR_MESSAGE);
+			}
 		}
-	
-		idCliente.setText(v.getCliente() + "");
-		desconto.setText(v.getDesconto() + "");
-	
-		// Exiba os itens da venda
-		List<ItemVenda> itens = v.getItens();
-		for (ItemVenda item : itens) {
-			System.out.println("Produto: " + item.getNome());
-			System.out.println("Quantidade: " + item.getQuantidade());
-			System.out.println("Preço: " + item.getPrecoUnitario());
-			// Adicione a lógica para exibir os itens na tela
-		}
-	
-		System.out.println(dataHora);
-		System.out.println(idCliente);
-		System.out.println(desconto);
 	}
-	/**
-	 * Executa as tarefas para cancelar a venda
-	 */
+	
 	protected void onClickCancelar() {
-		// TODO: Implementar
-		System.out.println("==> onClickCancelar");
+		id.setText("");
+		nomeCliente.setText("");
+		produto.setSelectedIndex(-1);
+		medida.setText("");
+		quantidade.setValue(0);
+		desconto.setValue(0);
+		totalVenda.setValue(0);
+		model.setRowCount(0);
+		itens.clear();
+		setupRegistrarNovaVenda();
 	}
 
 	/**
 	 * Executa as tarefas para registrar uma venda
 	 */
 	protected void onClickRegistrarVenda() {
-		// TODO: Implementar
-		System.out.println("==> onClickRegistrarVenda");
+		if (itens.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Adicione ao menos um produto à venda.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		try {
+			Cliente cliente = clienteService.pesquisarCliente(Integer.parseInt(id.getText().trim()), DatabaseConnection.getConnection());
+			Venda venda = new Venda(0, new Timestamp(System.currentTimeMillis()), cliente, itens, ((Number) desconto.getValue()).doubleValue(), 0.0);
+			double totalVenda = venda.calcularTotalVenda();
+			venda.setTotal(totalVenda);
+
+			vendaService.criarVenda(venda, DatabaseConnection.getConnection());
+			JOptionPane.showMessageDialog(this, "Venda registrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+			onClickCancelar(); // Limpa a tela após o registro
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Erro no registro da venda: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
-	/**
-	 * Executa as tarefas para registrar uma venda
-	 */
+	
 	protected void onClickAdicionarItemVenda() {
-		// TODO: Criar de fato uma venda
-		//ItemVenda venda = new ItemVenda();
-		//this.itens.add(venda);
+		Produto produtoSelecionado = (Produto) produto.getSelectedItem();
+		int qtd = ((Number) quantidade.getValue()).intValue();
+	
+		if (produtoSelecionado == null || qtd <= 0) {
+			JOptionPane.showMessageDialog(this, "Selecione um produto e insira uma quantidade válida.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
 
-		// TODO: Substituir as duas próximas linhas pela inclusão de fato da venda
-		int id = this.model.getRowCount() + 1; // ID sequencial
-		this.model.addRow(new Object[] { Boolean.FALSE, "Nome " + id, 1.25, 10, 12.5 }); // Adiciona uma nova linha
+		// Verifica se o produto tem estoque suficiente
+		if (produtoSelecionado instanceof EstoqueProduto estoqueProduto) {
+			if(estoqueProduto.getEstoque() < qtd){
+				JOptionPane.showMessageDialog(this, 
+					"Estoque insuficiente para o produto selecionado. Estoque disponível: " + estoqueProduto.getEstoque(),
+					"Aviso",
+					JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+		}
+	
+		double valorUnitario = produtoSelecionado.getPreco();
+		double valorTotal = valorUnitario * qtd;
+	
+		ItemVenda item = new ItemVenda(0, produtoSelecionado.getNome(), produtoSelecionado.getMedida(), qtd, valorUnitario);
+    	itens.add(item);
+	
+		model.addRow(new Object[] { false, produtoSelecionado.getNome(), valorUnitario, qtd, valorTotal });
+		atualizarTotalVenda();
+	}
+
+	private void atualizarTotalVenda() {
+		double total = itens.stream().mapToDouble(ItemVenda::TotalItem).sum();
+		
+		// Verifica se o desconto é null e define como 0 se for
+		double descontoValor = desconto.getValue() != null ? ((Number) desconto.getValue()).doubleValue() : 0.0;
+		
+		totalVenda.setValue(total - descontoValor);
 	}
 
 	// Classe para renderizar valores numéricos formatados

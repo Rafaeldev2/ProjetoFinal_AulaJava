@@ -1,12 +1,11 @@
 package cafeteria.vendas;
 
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class VendaService implements IVendaService{
@@ -26,7 +25,7 @@ public class VendaService implements IVendaService{
        try {
            //  ver quais parâmetros iremos mandar o banco
            psInsert = conn.prepareStatement(insertSQL);
-           psInsert.setString(1, String.valueOf(v.getId()));;
+           psInsert.setString(1, String.valueOf(v.getId()));
            psInsert.setString(2, String.valueOf(v.getDataHora()));
            psInsert.setString(3, String.valueOf(v.getCliente()));
         //    psInsert.setString(3, String.valueOf(v.getItens()));

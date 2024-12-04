@@ -1,8 +1,8 @@
 package cafeteria.vendas;
 
-import java.sql.Timestamp;
-import  java.util.List;
 import cafeteria.vendas.clientes.Cliente;
+import  java.sql.Timestamp;
+import java.util.List;
 
 public class Venda {
     private int id;

@@ -1,9 +1,6 @@
 package cafeteria.vendas.clientes;
 
 import cafeteria.connectionSQL.DatabaseConnection;
-import cafeteria.vendas.produtos.EstoqueProduto;
-import cafeteria.vendas.produtos.Produto;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -93,7 +90,7 @@ public class ClienteView extends JInternalFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isUpdating) {
-					//onClickAtualizar();
+					onClickAtualizar();
 				} else {
 					onClickSalvar();
 				}
@@ -174,6 +171,12 @@ public class ClienteView extends JInternalFrame {
 	protected void onClickPesquisar() {	
 		System.out.println(id.getText());
 		Cliente c = service.pesquisarCliente(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
+		if (c == null) {
+            JOptionPane.showMessageDialog(this, "Cliente não encontrado. Por favor, verifique o ID informado.", "Erro", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            return;
+		}
+
 		nome.setText(c.getNome());
 		telefone.setText(c.getTelefone());
 		

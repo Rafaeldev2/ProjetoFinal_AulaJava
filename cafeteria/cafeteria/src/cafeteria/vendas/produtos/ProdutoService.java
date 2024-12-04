@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ProdutoService implements IProdutoService{
 
     private String selectSQL = "SELECT * FROM produto WHERE id = ?";
+    private String listarSQL = "SELECT * FROM produto";
     private String insertSQL = "INSERT INTO produto(nome,medida,preco,estoque) VALUES(?, ?, ?, ?)";
     private String updateSQL = "UPDATE produto SET nome = ?, medida = ?, preco= ?, estoque = ?  WHERE id = ?";
 
@@ -98,5 +100,45 @@ public class ProdutoService implements IProdutoService{
         return produtos;
     }
 
+    @Override
+    public ArrayList<Produto> listarProdutos(Connection conn) {
+    ArrayList<Produto> produtos = new ArrayList<>();
+    PreparedStatement psReads = null;
+    ResultSet rs = null;
+    try {
+        psReads = conn.prepareStatement(listarSQL);
+        rs = psReads.executeQuery();
+
+        while (rs.next()) {
+            int produto_id = rs.getInt("id");
+            String nome = rs.getString("nome");
+            double preco = rs.getDouble("preco");
+            int codigoMedida = rs.getInt("medida");
+            UnidadeMedida medida = UnidadeMedida.fromCodigo(codigoMedida);
+            int estoque = rs.getInt("estoque");
+
+            // Verifica se o produto tem estoque e cria a instância apropriada
+            if (estoque > 0) {
+                produtos.add(new EstoqueProduto(produto_id, nome, preco, medida, estoque));
+            } else {
+                produtos.add(new Produto(produto_id, nome, preco, medida)); // Se não houver estoque, cria um Produto normal
+            }
+        }
+    } catch (SQLException sqle) {
+        System.err.println("Erro na consulta: " + sqle.getMessage());
+    } finally {
+        try {
+            if (rs != null) {
+                rs.close(); // Fecha o ResultSet
+            }
+            if (psReads != null) {
+                psReads.close(); // Fecha o PreparedStatement
+            }
+        } catch (SQLException sqle) {
+            System.err.println("Nao foi possivel finalizar o statement: " + sqle.getMessage());
+        }
+    }
+    return produtos; // Retorna a lista de produtos
+    }
     
 }
