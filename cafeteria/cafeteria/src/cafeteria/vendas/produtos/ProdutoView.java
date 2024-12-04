@@ -278,14 +278,12 @@ public class ProdutoView extends JInternalFrame {
 			onClickAtualizar(); // Se estiver no modo de atualização, chama o método de atualização
 			return; // Sai do método de salvar
 		}
-
 		UnidadeMedida medidaSelecionada = (UnidadeMedida) this.medida.getSelectedItem();
 		String precoText = preco.getText().replace(",", ".");
 		if (precoText.trim().isEmpty()) {
 			JOptionPane.showMessageDialog(this, "O campo de preço não pode estar vazio. Por favor, insira um valor válido.");
 			return; // Sai do método se o preço estiver vazio
 		}
-
 		double precoValue;
 		try {
 			precoValue = Double.parseDouble(precoText);

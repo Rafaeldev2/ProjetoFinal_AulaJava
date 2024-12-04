@@ -1,9 +1,12 @@
 package cafeteria.vendas.clientes;
 
+import cafeteria.connectionSQL.DatabaseConnection;
+import cafeteria.vendas.produtos.EstoqueProduto;
+import cafeteria.vendas.produtos.Produto;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
-
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
@@ -12,9 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
-
-import cafeteria.TelaPrincipal;
-import cafeteria.connectionSQL.DatabaseConnection;
 
 public class ClienteView extends JInternalFrame {
 
@@ -42,6 +42,7 @@ public class ClienteView extends JInternalFrame {
 	/**
 	 * Cria a janela do CRUD do cliente
 	 */
+	private boolean isUpdating = false;
 	public ClienteView(IClienteService service) {
 		this.service = service;
 
@@ -91,7 +92,11 @@ public class ClienteView extends JInternalFrame {
 		btSalvar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onClickSalvar();
+				if (isUpdating) {
+					//onClickAtualizar();
+				} else {
+					onClickSalvar();
+				}
 			}
 		});
 		btSalvar.setBounds(434, 126, 105, 27);
@@ -147,8 +152,10 @@ public class ClienteView extends JInternalFrame {
 	/**
 	 * Prepara o frame para a ação de incluir
 	 */
-	public void setupIncluir() {
+	public void setupAtualizar() {
 		// configura os botões de ação
+		isUpdating = true;
+		btSalvar.setText("Atualizar");
 		btSalvar.setEnabled(true);
 		btVoltar.setEnabled(true);
 		btNovoCliente.setEnabled(true);
@@ -159,6 +166,7 @@ public class ClienteView extends JInternalFrame {
 		nome.setEnabled(true);
 		telefone.setEnabled(true);
 	}
+
 
 	/**
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
@@ -173,6 +181,8 @@ public class ClienteView extends JInternalFrame {
 		
 		btVoltar.setEnabled(true);
 		btSalvar.setEnabled(true);
+		id.setEnabled(false);
+		setupAtualizar();
 		System.out.println("==> onClickPesquisar");
 	}
 
@@ -202,6 +212,17 @@ public class ClienteView extends JInternalFrame {
 	 * Executa as tarefas para salvar a inclusão de um novo cliente
 	 */
 	protected void onClickSalvar() {
+		String nomeText = nome.getText();
+		if (nomeText.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo de nome não pode estar vazio. Por favor, insira um valor válido.");
+			return; // Sai do método se o preço estiver vazio
+		}
+		String telefoneText = telefone.getText();
+		if (telefoneText.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo de telefone não pode estar vazio. Por favor, insira um valor válido.");
+			return; // Sai do método se o preço estiver vazio
+		}
+
 		Cliente c = new Cliente(nome.getText(), telefone.getText());
 		service.criarCliente(c, DatabaseConnection.getConnection());
 		JOptionPane.showMessageDialog(null,"Cliente cadastrado com sucesso!");
@@ -215,6 +236,36 @@ public class ClienteView extends JInternalFrame {
 		btPesquisar.setEnabled(true);
 
 		System.out.println("==> onClickSalvar");
+	}
+	protected void onClickAtualizar() {
+		
+		String nomeText = nome.getText();
+		if (nomeText.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo de nome não pode estar vazio. Por favor, insira um valor válido.");
+			return; // Sai do método se o preço estiver vazio
+		}
+		String telefoneText = telefone.getText();
+		if (telefoneText.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo de telefone não pode estar vazio. Por favor, insira um valor válido.");
+			return; // Sai do método se o preço estiver vazio
+		}
+		if (id.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo ID não pode estar vazio.");
+			return;
+		}	
+
+		int idValue;
+		try {
+			idValue = Integer.parseInt(id.getText().trim());
+			Cliente c = new Cliente(idValue, nome.getText(), telefone.getText());
+
+			service.atualizarCliente(c, DatabaseConnection.getConnection());
+			JOptionPane.showMessageDialog(null, "Cliente atualizado com sucesso!");
+	
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "ID inválido. Por favor, insira um número válido.");
+		}
+		System.out.println("==> onClickAtualizar");
 	}
 
 }
