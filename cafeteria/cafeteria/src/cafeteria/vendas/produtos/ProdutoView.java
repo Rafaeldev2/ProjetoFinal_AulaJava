@@ -1,9 +1,11 @@
 package cafeteria.vendas.produtos;
 
+import cafeteria.connectionSQL.DatabaseConnection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.NumberFormat;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -13,10 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
-import cafeteria.connectionSQL.DatabaseConnection;
-import cafeteria.vendas.clientes.Cliente;
-
 
 public class ProdutoView extends JInternalFrame {
 
@@ -47,6 +45,7 @@ public class ProdutoView extends JInternalFrame {
 	/**
 	 * Cria a janela do CRUD do produto
 	 */
+	private boolean isUpdating = false;
 	public ProdutoView(IProdutoService service) {
 		this.service = service;
 
@@ -63,7 +62,7 @@ public class ProdutoView extends JInternalFrame {
 
 		id = new JTextField();
 		id.setHorizontalAlignment(SwingConstants.CENTER);
-		id.setBounds(109, 38, 114, 21);
+		id.setBounds(109, 36, 114, 27);
 		getContentPane().add(id);
 		id.setColumns(10);
 
@@ -72,7 +71,7 @@ public class ProdutoView extends JInternalFrame {
 		getContentPane().add(lbNome);
 
 		nome = new JTextField();
-		nome.setBounds(109, 71, 430, 21);
+		nome.setBounds(109, 71, 430, 29);
 		getContentPane().add(nome);
 		nome.setColumns(10);
 
@@ -88,9 +87,15 @@ public class ProdutoView extends JInternalFrame {
 		btSalvar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onClickSalvar();
+				if (isUpdating) {
+					onClickAtualizar();
+				} else {
+					onClickSalvar();
+				}
 			}
 		});
+    
+
 		btSalvar.setBounds(434, 229, 105, 27);
 		getContentPane().add(btSalvar);
 
@@ -125,11 +130,11 @@ public class ProdutoView extends JInternalFrame {
 		getContentPane().add(btPesquisar);
 
 		JLabel lbPreco = new JLabel("Preço:");
-		lbPreco.setBounds(31, 136, 60, 17);
+		lbPreco.setBounds(31, 136, 60, 19);
 		getContentPane().add(lbPreco);
 
 		JLabel lbEstoque = new JLabel("Estoque:");
-		lbEstoque.setBounds(31, 205, 60, 17);
+		lbEstoque.setBounds(31, 205, 60, 19);
 		getContentPane().add(lbEstoque);
 
 		NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -137,24 +142,35 @@ public class ProdutoView extends JInternalFrame {
 		numberFormat.setMinimumFractionDigits(2);
 		preco = new JFormattedTextField(numberFormat);
 		preco.setHorizontalAlignment(SwingConstants.RIGHT);
-		preco.setBounds(109, 137, 114, 21);
+		preco.setBounds(109, 137, 114, 25);
 		getContentPane().add(preco);
 		preco.setColumns(10);
 
 		estoque = new JTextField();
 		estoque.setHorizontalAlignment(SwingConstants.RIGHT);
-		estoque.setBounds(109, 203, 114, 21);
+		estoque.setBounds(109, 203, 114, 26);
 		getContentPane().add(estoque);
 		estoque.setColumns(10);
 
 		temEstoque = new JCheckBox("Tem estoque?");
 		temEstoque.setBounds(26, 166, 114, 25);
-		getContentPane().add(temEstoque);
-	}
+		temEstoque.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (temEstoque.isSelected()) {
+					estoque.setEnabled(true); // Habilita o campo de estoque
+				} else {
+					estoque.setEnabled(false); // Desabilita o campo de estoque
+					estoque.setText(""); // Limpa o campo de estoque
+				}
+			}
+		});
+		getContentPane().add(temEstoque);	}
 
 	/**
 	 * Prepara o frame para a ação de consultar
 	 */
+	
 	public void setupConsultar() {
 		// configura os botões de ação
 		btSalvar.setEnabled(false);
@@ -171,15 +187,31 @@ public class ProdutoView extends JInternalFrame {
 		estoque.setEnabled(false);
 	}
 
+	public void setupAtualizar() {
+		// configura os botões de ação
+		isUpdating = true;
+		btSalvar.setText("Atualizar");
+		btSalvar.setEnabled(true);
+		btVoltar.setEnabled(true);
+		btNovoProduto.setEnabled(true);
+		btPesquisar.setEnabled(true);
+
+		// configura o comportamento dos campos
+		id.setEnabled(false);
+		nome.setEnabled(true);
+		medida.setEnabled(true);
+		preco.setEnabled(true);
+		temEstoque.setEnabled(true);
+		estoque.setEnabled(true);
+	}
+
 	/**
 	 * Executa as tarefas para efetuar uma pesquisa com base no ID informado
 	 */
 	protected void onClickPesquisar() {
 		System.out.println(id.getText());
-    
     try {
-        int produtoId = Integer.parseInt(id.getText());
-        Produto p = service.pesquisarProduto(produtoId, DatabaseConnection.getConnection());
+        Produto p = service.pesquisarProduto(Integer.parseInt(id.getText()), DatabaseConnection.getConnection());
         
         if (p != null) {
             nome.setText(p.getNome());
@@ -187,9 +219,20 @@ public class ProdutoView extends JInternalFrame {
             UnidadeMedida unidade = p.getMedida();
             medida.setSelectedItem(unidade);
             
+			if (p instanceof EstoqueProduto estoqueProduto) {
+                estoque.setText(String.valueOf(estoqueProduto.getEstoque()));
+                temEstoque.setSelected(true);
+				estoque.setEnabled(true);
+            } else {
+                estoque.setText("0");
+                temEstoque.setSelected(false);
+				estoque.setEnabled(false);
+            }
             setupConsultar();
             btVoltar.setEnabled(true);
             btSalvar.setEnabled(true);
+			id.setEnabled(false);
+			setupAtualizar();
         } else {
             JOptionPane.showMessageDialog(this, "Produto não encontrado.");
         }
@@ -206,13 +249,13 @@ public class ProdutoView extends JInternalFrame {
 	 * produto
 	 */
 	protected void onClickIncluirNovoProduto() {
-		
-		
+				
 		btPesquisar.setEnabled(false);
 		id.setEnabled(false);
 		nome.setEnabled(true);
 		preco.setEnabled(true);
 		medida.setEnabled(true);
+		temEstoque.setEnabled(true);
 		btVoltar.setEnabled(true);
 		btSalvar.setEnabled(true);
 		System.out.println("==> onClickIncluirNovoProduto");
@@ -231,19 +274,92 @@ public class ProdutoView extends JInternalFrame {
 	 * Executa as tarefas para salvar a inclusão de um novo produto
 	 */
 	protected void onClickSalvar() {
-		
-		Produto p = new Produto(nome.getText(), preco.getText(), );
+		if (isUpdating) {
+			onClickAtualizar(); // Se estiver no modo de atualização, chama o método de atualização
+			return; // Sai do método de salvar
+		}
+
+		UnidadeMedida medidaSelecionada = (UnidadeMedida) this.medida.getSelectedItem();
+		String precoText = preco.getText().replace(",", ".");
+		if (precoText.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo de preço não pode estar vazio. Por favor, insira um valor válido.");
+			return; // Sai do método se o preço estiver vazio
+		}
+
+		double precoValue;
+		try {
+			precoValue = Double.parseDouble(precoText);
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Preço inválido. Por favor, insira um número válido.");
+			return; // Sai do método se o preço não for válido
+		}
+
+		Produto p;
+
+		if (temEstoque.isSelected()) {
+			int estoqueValue = Integer.parseInt(estoque.getText());
+			p = new EstoqueProduto(0, nome.getText(), precoValue, medidaSelecionada, estoqueValue);
+		} else {
+			p = new Produto(0, nome.getText(), precoValue, medidaSelecionada);
+		}
 		service.criarProduto(p, DatabaseConnection.getConnection());
-		JOptionPane.showMessageDialog(null,"Cliente cadastrado com sucesso!");
+		JOptionPane.showMessageDialog(null,"Produto cadastrado com sucesso!");
 		
-		id.setEnabled(true);
+		id.setEnabled(false);
 		nome.setEnabled(false);
 		preco.setEnabled(false);
+		estoque.setEnabled(false);
+    	temEstoque.setSelected(false);
 		btSalvar.setEnabled(false);
-		btVoltar.setEnabled(false);
+		btVoltar.setEnabled(true);
 		btNovoProduto.setEnabled(true);
-		btPesquisar.setEnabled(true);
+		btPesquisar.setEnabled(false);
 
-		System.out.println("==> onClickSalvar");
+		System.out.println("==> onClickSalvar");		
+	}
+
+
+	protected void onClickAtualizar() {
+		UnidadeMedida medidaSelecionada = (UnidadeMedida) this.medida.getSelectedItem();
+		String precoText = preco.getText().replace(",", ".");
+		
+		if (precoText.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo de preço não pode estar vazio. Por favor, insira um valor válido.");
+			return; // Sai do método se o preço estiver vazio
+		}
+	
+		double precoValue;
+		try {
+			precoValue = Double.parseDouble(precoText);
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Preço inválido. Por favor, insira um número válido.");
+			return; // Sai do método se o preço não for válido
+		}
+	
+		// Verifica se estamos atualizando um produto existente
+		if (id.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "O campo ID não pode estar vazio.");
+			return;
+		}
+		int idValue;
+		try {
+			idValue = Integer.parseInt(id.getText().trim());
+			Produto p;
+	
+			if (temEstoque.isSelected()) {
+				int estoqueValue = Integer.parseInt(estoque.getText());
+				p = new EstoqueProduto(idValue, nome.getText(), precoValue, medidaSelecionada, estoqueValue);
+			} else {
+				p = new Produto(idValue, nome.getText(), precoValue, medidaSelecionada);
+			}
+	
+			// Atualiza o produto existente
+			service.atualizarProduto(p, DatabaseConnection.getConnection());
+			JOptionPane.showMessageDialog(null, "Produto atualizado com sucesso!");
+	
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "ID inválido. Por favor, insira um número válido.");
+		}
+		System.out.println("==> onClickAtualizar");
 	}
 }

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class ProdutoService implements IProdutoService{
 
     private String selectSQL = "SELECT * FROM produto WHERE id = ?";
-    private String insertSQL = "INSERT INTO produto(id,nome,medida,preco) VALUES(?, ?, ?, ?, ?)";
+    private String insertSQL = "INSERT INTO produto(nome,medida,preco,estoque) VALUES(?, ?, ?, ?)";
     private String updateSQL = "UPDATE produto SET nome = ?, medida = ?, preco= ?, estoque = ?  WHERE id = ?";
 
    
@@ -16,13 +16,13 @@ public class ProdutoService implements IProdutoService{
     public void criarProduto(Produto p, Connection conn) {
         PreparedStatement psInsert = null;
        try {
-        //  ver quais parâmetros iremos mandar o banco
         psInsert = conn.prepareStatement(insertSQL);
-        psInsert.setInt(1, p.getId());
-        psInsert.setString(2, p.getNome());
-        psInsert.setInt(3, p.getMedida().getCodigo());
-        psInsert.setDouble(4, p.getPreco());
-        psInsert.executeUpdate();          
+        psInsert.setString(1, p.getNome());
+        psInsert.setInt(2, p.getMedida().getCodigo());
+        psInsert.setDouble(3, p.getPreco());
+        psInsert.setDouble(4, ((EstoqueProduto) p).getEstoque());
+        psInsert.executeUpdate();
+
     } catch (SQLException sqle) {
         System.err.println("Erro na insercao: " + sqle.getMessage());
     } finally {
@@ -44,7 +44,13 @@ public class ProdutoService implements IProdutoService{
             psUpdate.setString(1, p.getNome());
             psUpdate.setInt(2, p.getMedida().getCodigo()); // Usando o código da UnidadeMedida
             psUpdate.setDouble(3, p.getPreco());
-            psUpdate.setInt(4, p.getId());
+            psUpdate.setDouble(4, ((EstoqueProduto) p).getEstoque());
+            psUpdate.setInt(5, p.getId());
+
+            int rowsAffected = psUpdate.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Nenhum produto encontrado/atualizado com o ID: " + p.getId());
+            }
             psUpdate.execute();
         } catch (SQLException sqle) {
             System.out.println("Erro na execucao da atualizacao: " + sqle.getMessage());
@@ -57,8 +63,6 @@ public class ProdutoService implements IProdutoService{
             psUpdate = null;
         }
     }
-
-
 
     @Override
     public Produto pesquisarProduto(int id,Connection conn) {
@@ -74,9 +78,12 @@ public class ProdutoService implements IProdutoService{
                 Double preco = rs.getDouble("preco");
                 int codigoMedida = rs.getInt("medida");
                 UnidadeMedida medida = UnidadeMedida.fromCodigo(codigoMedida);
-
-                produtos = new Produto(produto_id,nome,preco,medida);
-                return produtos;
+                int estoque = rs.getInt("estoque");
+                if (estoque > 0) {
+                    produtos = new EstoqueProduto(produto_id, nome, preco, medida, estoque);
+                } else {
+                    produtos = new Produto(produto_id, nome, preco, medida); // Se não houver estoque, pode ser 0
+                }
             }
         } catch (SQLException sqle) {
             System.err.println("Erro na consulta: " + sqle.getMessage());
